@@ -1,0 +1,50 @@
+{
+  "name": "smaskts",
+  "version": "1.0.7",
+  "keywords": [
+    "javascript",
+    "js",
+    "mask",
+    "input",
+    "input mask"
+  ],
+  "author": "Marcelo Ribeiro<contato@marceloribeiro.dev>",
+  "homepage": "https://marcelo-ribeiro.github.io/smask-ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marcelo-ribeiro/smask-ts.git"
+  },
+  "bugs": {
+    "url": "https://github.com/marcelo-ribeiro/smask-ts/issues"
+  },
+  "license": "MIT",
+  "files": [
+    "dist/smask.es.js",
+    "dist/smask.umd.js",
+    "lib"
+  ],
+  "main": "./lib/main.ts",
+  "module": "./lib/main.ts",
+  "exports": {
+    ".": {
+      "import": "./lib/main.ts",
+      "require": "./dist/smask.es.js"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "publish": "jest && tsc && vite build && npm publish",
+    "preview": "vite preview",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@types/jest": "^27.4.1",
+    "jest": "^27.5.1",
+    "typescript": "^4.5.4",
+    "vite": "^2.8.0"
+  },
+  "dependencies": {
+    "smaskts": "^1.0.7"
+  }
+}
