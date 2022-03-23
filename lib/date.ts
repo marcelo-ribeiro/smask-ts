@@ -1,13 +1,23 @@
-import { mask } from "./mask";
 import { elements } from "./input";
+import { mask } from "./mask";
 
-const dateParts = (locales?: string | string[] | undefined) =>
-  new Intl.DateTimeFormat(locales).formatToParts();
-const initialDate = "01/01/1970".replace(/\D/g, "");
-const getMaskedDate = (value: string, pattern: string) => mask(value, pattern);
-const getComputedDate = (value: string) => {
-  value = value.replace(/\D/g, "");
-  return value + initialDate.slice(value.length);
+const referenceDateDigits = "01/01/1970".replace(/\D/g, "");
+
+const getDateParts = (
+  locales?: string | string[] | undefined
+): Intl.DateTimeFormatPart[] => {
+  return new Intl.DateTimeFormat(locales).formatToParts();
+};
+
+const getComputedDate = (value: string): string => {
+  const valueDigits = value.replace(/\D/g, "");
+  const computedDate =
+    valueDigits + referenceDateDigits.slice(valueDigits.length);
+  return computedDate;
+};
+
+const isValidDate = (date: Date): boolean => {
+  return date instanceof Date && !isNaN(date.valueOf());
 };
 
 /**
@@ -18,16 +28,13 @@ export const maskDate = (
   pattern: string,
   locale?: string
 ): string => {
-  const dateObject = date(
-    getMaskedDate(getComputedDate(element.value), pattern),
-    locale
-  );
-  return mask(
-    isNaN(dateObject.valueOf())
-      ? elements.get(element).oldValue
-      : element.value,
-    pattern
-  );
+  const computedDate = getComputedDate(element.value);
+  const maskedDate = mask(computedDate, pattern);
+  const dateObject = toDate(maskedDate, locale);
+  const dateValue = isValidDate(dateObject)
+    ? element.value
+    : elements.get(element).oldValue;
+  return mask(dateValue, pattern);
 };
 
 /**
@@ -35,7 +42,8 @@ export const maskDate = (
  */
 export const getDatePattern = (locale?: string): string => {
   let pattern = "";
-  dateParts(locale).forEach(({ type, value }) => {
+  const dateParts = getDateParts(locale);
+  dateParts.forEach(({ type, value }) => {
     if (type === "month" || type === "day") pattern += "dd";
     else if (type === "year") pattern += "dddd";
     else if (type === "literal") pattern += value;
@@ -46,12 +54,13 @@ export const getDatePattern = (locale?: string): string => {
 /**
  * Convert string to locale date
  */
-export const date = (value: string, locale?: string): Date => {
-  const valueArray = value.split("/");
-  const { month, day, year }: any = {
-    [dateParts(locale)[0].type]: valueArray[0],
-    [dateParts(locale)[2].type]: valueArray[1],
-    [dateParts(locale)[4].type]: valueArray[2],
+export const toDate = (date: string, locale?: string): Date => {
+  const dateArray = date.split("/");
+  const dateParts = getDateParts(locale);
+  const { month, day, year }: { [x: string]: string } = {
+    [dateParts[0].type]: dateArray[0],
+    [dateParts[2].type]: dateArray[1],
+    [dateParts[4].type]: dateArray[2],
   };
   const dateFormat = `${month}/${day}/${year}`;
   return new Date(dateFormat);

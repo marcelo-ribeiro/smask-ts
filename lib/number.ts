@@ -1,5 +1,5 @@
 /**
- * Number
+ * Get locale number
  */
 export const number = (
   value: number,
@@ -12,8 +12,11 @@ export const number = (
   return new Intl.NumberFormat(locale, options).format(value);
 };
 
-/* To be updated based on need - French - Canada and US locale handled  */
-const currencyToLocale = new Map([
+/**
+ * Get currency locale
+ * TODO: Add support for other locales
+ */
+const getCurrencyLocale = new Map([
   ["en-US", "USD"],
   ["pt-BR", "BRL"],
   ["fr-CA", "CAD"],
@@ -22,7 +25,7 @@ const currencyToLocale = new Map([
 const getOptions = (locale: string): any => ({
   currency: {
     style: "currency",
-    currency: currencyToLocale.get(locale),
+    currency: getCurrencyLocale.get(locale),
   },
   decimal: {},
   percent: {},

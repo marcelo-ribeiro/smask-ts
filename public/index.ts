@@ -1,4 +1,4 @@
-import * as smask from "smaskts";
+import * as smask from "../lib/main";
 
 // Custom mask
 console.log("CPF: ", smask.mask("12345678909", "ddd.ddd.ddd-dd"));
