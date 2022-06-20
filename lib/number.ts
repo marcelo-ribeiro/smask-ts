@@ -27,6 +27,10 @@ const getOptions = (locale: string): any => ({
     style: "currency",
     currency: getCurrencyLocale.get(locale),
   },
-  decimal: {},
-  percent: {},
+  decimal: {
+    style: "decimal",
+  },
+  percent: {
+    style: "percent",
+  },
 });

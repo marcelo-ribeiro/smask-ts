@@ -1,8 +1,5 @@
 import { number } from "./number";
 
-/**
- * Currency
- */
 export const currency = (
   value: number,
   style = "currency",
