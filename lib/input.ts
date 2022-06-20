@@ -1,7 +1,7 @@
-import { mask } from "./mask";
-import { unmaskNumber } from "./unmaskNumber";
 import { currency } from "./currency";
 import { getDatePattern, maskDate } from "./date";
+import { mask } from "./mask";
+import { unmaskNumber } from "./unmaskNumber";
 
 export const elements = new Map();
 
@@ -11,71 +11,66 @@ const setElements = (element: HTMLInputElement, options = {}) =>
     ...options,
   });
 
-/**
- * maskInput
- */
 export const input = (
-  element: string | HTMLInputElement,
-  patterns: string | string[]
-): void => {
-  if (!Array.isArray(patterns)) throw ReferenceError("Pattern is not an array");
-  if (!patterns) throw ReferenceError("Missing second parameter pattern.");
+  element: HTMLInputElement,
+  patterns: string[]
+): (() => void) => {
+  if (!element || typeof element !== "object") {
+    throw Error("Element not found.");
+  }
 
-  const el: HTMLInputElement | null =
-    typeof element === "object" ? element : document.querySelector(element);
-
-  if (!el) throw Error("Element not found.");
-
-  elements.set(el, {});
-
-  if (patterns.length > 1) patterns.sort((a, b) => a.length - b.length);
+  if (Array.isArray(patterns)) {
+    if (patterns.length > 1) {
+      patterns.sort((a, b) => a.length - b.length);
+    }
+  } else {
+    throw ReferenceError("Pattern should be an array or string");
+  }
 
   const [pattern, dynamicPattern] = patterns;
 
+  elements.set(element, {});
+
   let listener: () => void;
 
-  // Initialize input listener by mask
   switch (pattern) {
     case "currency": {
-      el.placeholder = currency(0);
+      element.placeholder = currency(0);
       listener = () => {
-        const unmaskedNumber = unmaskNumber(el.value, pattern);
-        el.value = currency(unmaskedNumber, pattern);
+        const unmaskedNumber = unmaskNumber(element.value, pattern);
+        element.value = currency(unmaskedNumber, pattern);
       };
       break;
     }
     case "date": {
       const pattern = getDatePattern();
-      el.minLength = el.maxLength =
-        // el.minlength =
-        // el.maxlength =
-        pattern.length;
-      el.pattern = `.{${pattern.length},${pattern.length}}`;
+      element.minLength = element.maxLength = pattern.length;
+      element.pattern = `.{${pattern.length},${pattern.length}}`;
       listener = () => {
-        el.value = maskDate(el, pattern);
-        setElements(el, { oldValue: el.value });
+        element.value = maskDate(element, pattern);
+        setElements(element, { oldValue: element.value });
       };
       break;
     }
     default: {
-      el.minLength =
-        // el.minlength =
-        pattern.length;
-      el.maxLength =
-        // el.maxlength =
-        dynamicPattern?.length || pattern.length;
-      el.pattern = `.{${pattern.length},${
+      element.minLength = pattern.length;
+      element.maxLength = dynamicPattern?.length || pattern.length;
+      element.pattern = `.{${pattern.length},${
         dynamicPattern?.length || pattern.length
       }}`;
       listener = dynamicPattern
         ? () => {
             const computedPattern =
-              el.value.length <= pattern.length ? pattern : dynamicPattern;
-            el.value = mask(el.value, computedPattern);
+              element.value.length <= pattern.length ? pattern : dynamicPattern;
+            element.value = mask(element.value, computedPattern);
           }
-        : () => (el.value = mask(el.value, pattern));
+        : () => (element.value = mask(element.value, pattern));
     }
   }
-  el.value && listener();
-  el.addEventListener("input", listener);
+  element.value && listener();
+  element.addEventListener("input", listener);
+
+  return () => {
+    element.removeEventListener("input", listener);
+  };
 };

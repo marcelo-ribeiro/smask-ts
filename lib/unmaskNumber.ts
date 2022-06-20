@@ -3,10 +3,9 @@
  * and if pattern equals currency, divide by 100
  */
 export const unmaskNumber = (value: string, pattern: string): number => {
-  const valueReplaced = value.replace(/\D/g, "");
+  const digits = value.replace(/\D/g, "");
   let output = 0;
-  if (valueReplaced && "currency" === pattern)
-    output = parseFloat(valueReplaced) / 100;
+  if (digits && pattern === "currency") output = parseFloat(digits) / 100;
   return output;
 };
 
@@ -33,8 +32,10 @@ export const reverseCurrencyFormat = (
     style: "currency",
     currency,
   }).formatToParts(1111.1);
-  const symbol = parts.find((part) => part.type === "currency")?.value;
-  const reversedValue = symbol ? value.replace(symbol, "") : value;
+  const currencySymbol = parts.find((part) => part.type === "currency")?.value;
+  const reversedValue = currencySymbol
+    ? value.replace(currencySymbol, "")
+    : value;
   return reverseFormat(reversedValue, parts);
 };
 
@@ -49,5 +50,5 @@ const reverseFormat = (
   const decimal = parts.find((part) => part.type === "decimal")?.value;
   if (group) value = value.replaceAll(group, "");
   if (decimal) value = value.replace(decimal, ".");
-  return Number.isNaN(value) ? NaN : +value;
+  return Number.isNaN(value) ? NaN : parseFloat(value);
 };
