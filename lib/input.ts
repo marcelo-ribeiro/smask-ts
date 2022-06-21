@@ -15,19 +15,14 @@ export const input = (
   element: HTMLInputElement,
   patterns: string[]
 ): (() => void) => {
-  if (!element || typeof element !== "object") {
+  if (!element || typeof element !== "object")
     throw Error("Element not found.");
-  }
-
-  if (Array.isArray(patterns)) {
-    if (patterns.length > 1) {
-      patterns.sort((a, b) => a.length - b.length);
-    }
-  } else {
+  if (!Array.isArray(patterns))
     throw ReferenceError("Pattern should be an array or string");
-  }
 
-  const [pattern, dynamicPattern] = patterns;
+  const [pattern, dynamicPattern] = patterns.sort(
+    (a, b) => a.length - b.length
+  );
 
   elements.set(element, {});
 
@@ -67,6 +62,7 @@ export const input = (
         : () => (element.value = mask(element.value, pattern));
     }
   }
+
   element.value && listener();
   element.addEventListener("input", listener);
 
