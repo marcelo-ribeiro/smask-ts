@@ -1,13 +1,13 @@
 import * as smask from "../lib/main";
 
 // Custom mask
-console.log("CPF: ", smask.mask("12345678909", "ddd.ddd.ddd-dd"));
-console.log("Cell phone: ", smask.mask("71987654321", "(dd) ddddd-dddd"));
+console.log("CPF: ", smask.mask("12345678909", ["ddd.ddd.ddd-dd"]));
+console.log("Cell phone: ", smask.mask("71987654321", ["(dd) ddddd-dddd"]));
 console.log(
   "Credit card: ",
-  smask.mask("1234567812345678", "dddd dddd dddd dddd")
+  smask.mask("1234567812345678", ["dddd dddd dddd dddd"])
 );
-console.log("Postal Code: ", smask.mask("12345678", "ddddd-ddd"));
+console.log("Postal Code: ", smask.mask("12345678", ["ddddd-ddd"]));
 console.log("Postal Code (unmasked): ", smask.unmask("12345-678", "ddddd-ddd"));
 
 // Number and Currency
