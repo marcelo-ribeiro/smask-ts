@@ -17,8 +17,9 @@ export const input = (
 ): (() => void) => {
   if (!element || typeof element !== "object")
     throw Error("Element not found.");
+  if (!patterns) throw ReferenceError("Pattern should be an array");
   if (!Array.isArray(patterns))
-    throw ReferenceError("Pattern should be an array or string");
+    throw ReferenceError("Pattern should be an array");
 
   const [pattern, dynamicPattern] = patterns.sort(
     (a, b) => a.length - b.length
@@ -53,13 +54,9 @@ export const input = (
       element.pattern = `.{${pattern.length},${
         dynamicPattern?.length || pattern.length
       }}`;
-      listener = dynamicPattern
-        ? () => {
-            const computedPattern =
-              element.value.length <= pattern.length ? pattern : dynamicPattern;
-            element.value = mask(element.value, computedPattern);
-          }
-        : () => (element.value = mask(element.value, pattern));
+      listener = () => {
+        element.value = mask(element.value, patterns);
+      };
     }
   }
 
