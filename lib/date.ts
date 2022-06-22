@@ -29,12 +29,12 @@ export const maskDate = (
   locale?: string
 ): string => {
   const computedDate = getComputedDate(element.value);
-  const maskedDate = mask(computedDate, pattern);
+  const maskedDate = mask(computedDate, [pattern]);
   const dateObject = toDate(maskedDate, locale);
   const dateValue = isValidDate(dateObject)
     ? element.value
     : elements.get(element).oldValue;
-  return mask(dateValue, pattern);
+  return mask(dateValue, [pattern]);
 };
 
 /**
